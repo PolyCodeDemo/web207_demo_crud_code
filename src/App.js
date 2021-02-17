@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 function App() {
+  const [clickRow, setClickRow] = useState(-1);
   const [listSanPham, setListSanPham] = useState([]);
   const [formData, setFormData] = useState({
     id: '',
@@ -32,11 +33,7 @@ function App() {
     });
   }
 
-  const onSubmitHandler = function (event) {
-    event.preventDefault();
-    console.log(formData)
-
-    const url = 'https://5f2d045b8085690016922b50.mockapi.io/todo-list/my-products';
+  const onCreate = function (url, data) {
     axios.post(url, formData)
       .then(function (response) {
         console.log(response);
@@ -55,6 +52,61 @@ function App() {
       .catch(function (error) {
         console.log(error)
       })
+  }
+
+  const onUpdate = function (url, data) {
+    axios.put(url, data)
+      .then(function (response) {
+        const { data } = response;
+        console.log(data);
+        const list = listSanPham.map(function (value, index) {
+          if (index == clickRow) {
+            return data;
+          } else {
+            return value;
+          }
+        });
+
+        setListSanPham(list);
+        setFormData({
+          id: '',
+          ten_san_pham: '',
+          gia_san_pham: '',
+        });
+        setClickRow(-1);
+
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+
+  const onSubmitHandler = function (event) {
+    event.preventDefault();
+    console.log(formData)
+    const url = 'https://5f2d045b8085690016922b50.mockapi.io/todo-list/my-products';
+
+    if (clickRow == -1) {
+      onCreate(url, formData);
+    } else {
+      onUpdate(url + '/' + formData.id, formData);
+    }
+  }
+
+  const btnUpdateOnClick = function (event, value, index) {
+    console.log(value, index);
+    setFormData(value);
+    setClickRow(index);
+  }
+
+  const btnXoaFormOnClick = function (event) {
+    event.preventDefault();
+    setFormData({
+      id: '',
+      ten_san_pham: '',
+      gia_san_pham: '',
+    });
+    setClickRow(-1);
   }
 
   return (
@@ -103,7 +155,10 @@ function App() {
 
           <div className="form-group row d-flex justify-content-center">
             <button className="btn btn-primary">Lưu</button>
-            <button className="btn btn-danger ml-4">Xóa form</button>
+            <button
+              type="reset"
+              onClick={ btnXoaFormOnClick }
+              className="btn btn-danger ml-4">Xóa form</button>
 
           </div>
         </form>
@@ -130,6 +185,9 @@ function App() {
                     <td>{ value.gia_san_pham } VND</td>
                     <td>
                       <button
+                        onClick={ (event) => {
+                          btnUpdateOnClick(event, value, index)
+                        } }
                         className="btn btn-primary ml-3">
                         Update
                       </button>
