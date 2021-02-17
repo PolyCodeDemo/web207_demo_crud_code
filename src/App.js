@@ -109,6 +109,23 @@ function App() {
     setClickRow(-1);
   }
 
+  const btnDeleteOnClick = function (event, value, index) {
+    console.log(event, value, index)
+    const url = 'https://5f2d045b8085690016922b50.mockapi.io/todo-list/my-products/' + value.id;
+
+    axios.delete(url)
+      .then(function (response) {
+        const list = listSanPham.filter(function (val, idx) {
+          return idx == index ? false : true;
+        })
+        setListSanPham(list);
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+  }
+
   return (
     <div className="App">
 
@@ -192,6 +209,9 @@ function App() {
                         Update
                       </button>
                       <button
+                        onClick={ (event) => {
+                          btnDeleteOnClick(event, value, index)
+                        } }
                         className="btn btn-danger ml-3">
                         Delete
                       </button>
