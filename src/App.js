@@ -1,19 +1,24 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function App() {
-  const listSanPham = [
-    {
-      id: 1,
-      ten_san_pham: 'Samsung',
-      gia_san_pham: '12,000,000',
-    },
-    {
-      id: 2,
-      ten_san_pham: 'Oppo',
-      gia_san_pham: '6,000,000',
-    }
-  ];
+  const [listSanPham, setListSanPham] = useState([]);
+
+  useEffect(function () {
+    const url = 'https://5f2d045b8085690016922b50.mockapi.io/todo-list/my-products';
+    axios.get(url)
+      .then(function (response) {
+        const { data } = response;
+        setListSanPham(data);
+      })
+      .catch(error => {
+        console.log(error)
+      });
+  }, []);
+
+
   return (
     <div className="App">
 
@@ -28,14 +33,14 @@ function App() {
           </div>
 
           <div className="form-group row">
-            <label className="col-sm-2 col-form-label">Name</label>
+            <label className="col-sm-2 col-form-label">Tên</label>
             <div className="col-sm-10">
               <input type="text" className="form-control" />
             </div>
           </div>
 
           <div className="form-group row">
-            <label className="col-sm-2 col-form-label">Price</label>
+            <label className="col-sm-2 col-form-label">Giá</label>
             <div className="col-sm-10">
               <input type="text" className="form-control" />
             </div>
